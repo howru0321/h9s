@@ -11,9 +11,9 @@ import { podDBConfig, replicasetDBConfig, deploymentDBConfig } from './typeorm.c
       envFilePath: ['.env'],
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot(podDBConfig),//pod.sqlite 연결
-    TypeOrmModule.forRoot(replicasetDBConfig),//replicaset.sqlite 연결
-    TypeOrmModule.forRoot(deploymentDBConfig),//deploymentDBConfig 연결
+    TypeOrmModule.forRoot(podDBConfig),
+    TypeOrmModule.forRoot(replicasetDBConfig),
+    TypeOrmModule.forRoot(deploymentDBConfig),
   ],
   controllers: [AppController],
   providers: [AppService],
