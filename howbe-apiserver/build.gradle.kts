@@ -1,9 +1,5 @@
 import com.google.protobuf.gradle.*
 
-val grpcVersion by extra("3.25.3")
-val protobufVersion by extra("1.62.2")
-val protobufKotlinVersion by extra("1.4.1")
-
 plugins {
     id("org.springframework.boot") version "3.3.2"
     id("io.spring.dependency-management") version "1.1.6"
@@ -22,7 +18,9 @@ repositories {
     mavenCentral()
 }
 
-
+val grpcKotlinVersion by extra("1.4.1")
+val grpcVersion by extra("1.65.1")
+val grpcProtobufVersion by extra("3.25.3")
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -30,9 +28,13 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation("io.grpc:grpc-kotlin-stub:$protobufKotlinVersion")
-    implementation("io.grpc:grpc-protobuf:$protobufVersion")
-    implementation("com.google.protobuf:protobuf-kotlin:$grpcVersion")
+
+    implementation("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
+    implementation("io.grpc:grpc-stub:$grpcVersion")
+    implementation("io.grpc:grpc-protobuf:$grpcVersion")
+    runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
+    compileOnly ("org.apache.tomcat:annotations-api:6.0.53")
+    implementation("com.google.protobuf:protobuf-kotlin:$grpcProtobufVersion")
 }
 
 sourceSets {
@@ -48,14 +50,14 @@ sourceSets {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:$grpcVersion"
+        artifact = "com.google.protobuf:protoc:$grpcProtobufVersion"
     }
     plugins {
         create("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:$protobufVersion"
+            artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
         }
         create("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:$protobufKotlinVersion:jdk8@jar"
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion:jdk8@jar"
         }
     }
     generateProtoTasks {
@@ -64,7 +66,9 @@ protobuf {
                 create("grpc")
                 create("grpckt")
             }
-            it.builtins { create("kotlin") }
+            it.builtins {
+                create("kotlin")
+            }
         }
     }
 }

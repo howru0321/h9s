@@ -4,6 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { podDBConfig, replicasetDBConfig, deploymentDBConfig } from './typeorm.config';
+import { HelloService } from './hello/hello.service';
+import { HelloController } from './hello/hello.controller';
+import { HelloModule } from './hello/hello.module';
 
 @Module({
   imports: [
@@ -14,8 +17,9 @@ import { podDBConfig, replicasetDBConfig, deploymentDBConfig } from './typeorm.c
     TypeOrmModule.forRoot(podDBConfig),
     TypeOrmModule.forRoot(replicasetDBConfig),
     TypeOrmModule.forRoot(deploymentDBConfig),
+    HelloModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, HelloController],
+  providers: [AppService, HelloService],
 })
 export class AppModule {}
