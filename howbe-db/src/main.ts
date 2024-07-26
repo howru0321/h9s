@@ -17,12 +17,10 @@ async function bootstrap() {
     options: {
       package: 'hello',
       protoPath: join(__dirname, './proto/hello.proto'),
-      url: 'howbe-apiserver:50051',
+      url: '0.0.0.0:50051',
     },
   });
 
   await app.startAllMicroservices();
-
-  console.log(`howbe-db Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
