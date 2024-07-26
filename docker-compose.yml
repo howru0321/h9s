@@ -1,0 +1,22 @@
+services:
+  howbe-db:
+    build: ./howbe-db
+    image: howru0321/howbe-db
+    volumes:
+      - howbe-db:/app/src/sqlite
+    networks:
+      - howbe-network
+  howbe-apiserver:
+    build: ./howbe-apiserver
+    image: howru0321/howbe-apiserver
+    ports: 
+      - 8080:8080
+    networks:
+      - howbe-network
+
+volumes:
+  howbe-db:
+
+networks:
+  howbe-network:
+    driver: bridge
