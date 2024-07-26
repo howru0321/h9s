@@ -17,7 +17,7 @@ async function bootstrap() {
     options: {
       package: 'hello',
       protoPath: join(__dirname, './proto/hello.proto'),
-      url: 'localhost:50051',
+      url: 'howbe-apiserver:50051',
     },
   });
 
