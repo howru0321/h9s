@@ -19,7 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion8
 
 const (
-	HelloWorldService_SayHello_FullMethodName = "/hello.HelloWorldService/SayHello"
+	HelloWorldService_SayHello_FullMethodName                    = "/hello.HelloWorldService/SayHello"
+	HelloWorldService_SayHelloClientStream_FullMethodName        = "/hello.HelloWorldService/SayHelloClientStream"
+	HelloWorldService_SayHelloServerStream_FullMethodName        = "/hello.HelloWorldService/SayHelloServerStream"
+	HelloWorldService_SayHelloBidirectionalStream_FullMethodName = "/hello.HelloWorldService/SayHelloBidirectionalStream"
 )
 
 // HelloWorldServiceClient is the client API for HelloWorldService service.
@@ -27,6 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type HelloWorldServiceClient interface {
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	SayHelloClientStream(ctx context.Context, opts ...grpc.CallOption) (HelloWorldService_SayHelloClientStreamClient, error)
+	SayHelloServerStream(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (HelloWorldService_SayHelloServerStreamClient, error)
+	SayHelloBidirectionalStream(ctx context.Context, opts ...grpc.CallOption) (HelloWorldService_SayHelloBidirectionalStreamClient, error)
 }
 
 type helloWorldServiceClient struct {
@@ -47,11 +53,114 @@ func (c *helloWorldServiceClient) SayHello(ctx context.Context, in *HelloRequest
 	return out, nil
 }
 
+func (c *helloWorldServiceClient) SayHelloClientStream(ctx context.Context, opts ...grpc.CallOption) (HelloWorldService_SayHelloClientStreamClient, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &HelloWorldService_ServiceDesc.Streams[0], HelloWorldService_SayHelloClientStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &helloWorldServiceSayHelloClientStreamClient{ClientStream: stream}
+	return x, nil
+}
+
+type HelloWorldService_SayHelloClientStreamClient interface {
+	Send(*HelloRequest) error
+	CloseAndRecv() (*HelloReply, error)
+	grpc.ClientStream
+}
+
+type helloWorldServiceSayHelloClientStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *helloWorldServiceSayHelloClientStreamClient) Send(m *HelloRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *helloWorldServiceSayHelloClientStreamClient) CloseAndRecv() (*HelloReply, error) {
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	m := new(HelloReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *helloWorldServiceClient) SayHelloServerStream(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (HelloWorldService_SayHelloServerStreamClient, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &HelloWorldService_ServiceDesc.Streams[1], HelloWorldService_SayHelloServerStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &helloWorldServiceSayHelloServerStreamClient{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type HelloWorldService_SayHelloServerStreamClient interface {
+	Recv() (*HelloReply, error)
+	grpc.ClientStream
+}
+
+type helloWorldServiceSayHelloServerStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *helloWorldServiceSayHelloServerStreamClient) Recv() (*HelloReply, error) {
+	m := new(HelloReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (c *helloWorldServiceClient) SayHelloBidirectionalStream(ctx context.Context, opts ...grpc.CallOption) (HelloWorldService_SayHelloBidirectionalStreamClient, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &HelloWorldService_ServiceDesc.Streams[2], HelloWorldService_SayHelloBidirectionalStream_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &helloWorldServiceSayHelloBidirectionalStreamClient{ClientStream: stream}
+	return x, nil
+}
+
+type HelloWorldService_SayHelloBidirectionalStreamClient interface {
+	Send(*HelloRequest) error
+	Recv() (*HelloReply, error)
+	grpc.ClientStream
+}
+
+type helloWorldServiceSayHelloBidirectionalStreamClient struct {
+	grpc.ClientStream
+}
+
+func (x *helloWorldServiceSayHelloBidirectionalStreamClient) Send(m *HelloRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *helloWorldServiceSayHelloBidirectionalStreamClient) Recv() (*HelloReply, error) {
+	m := new(HelloReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // HelloWorldServiceServer is the server API for HelloWorldService service.
 // All implementations must embed UnimplementedHelloWorldServiceServer
 // for forward compatibility
 type HelloWorldServiceServer interface {
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
+	SayHelloClientStream(HelloWorldService_SayHelloClientStreamServer) error
+	SayHelloServerStream(*HelloRequest, HelloWorldService_SayHelloServerStreamServer) error
+	SayHelloBidirectionalStream(HelloWorldService_SayHelloBidirectionalStreamServer) error
 	mustEmbedUnimplementedHelloWorldServiceServer()
 }
 
@@ -61,6 +170,15 @@ type UnimplementedHelloWorldServiceServer struct {
 
 func (UnimplementedHelloWorldServiceServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+}
+func (UnimplementedHelloWorldServiceServer) SayHelloClientStream(HelloWorldService_SayHelloClientStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method SayHelloClientStream not implemented")
+}
+func (UnimplementedHelloWorldServiceServer) SayHelloServerStream(*HelloRequest, HelloWorldService_SayHelloServerStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method SayHelloServerStream not implemented")
+}
+func (UnimplementedHelloWorldServiceServer) SayHelloBidirectionalStream(HelloWorldService_SayHelloBidirectionalStreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method SayHelloBidirectionalStream not implemented")
 }
 func (UnimplementedHelloWorldServiceServer) mustEmbedUnimplementedHelloWorldServiceServer() {}
 
@@ -93,6 +211,79 @@ func _HelloWorldService_SayHello_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _HelloWorldService_SayHelloClientStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(HelloWorldServiceServer).SayHelloClientStream(&helloWorldServiceSayHelloClientStreamServer{ServerStream: stream})
+}
+
+type HelloWorldService_SayHelloClientStreamServer interface {
+	SendAndClose(*HelloReply) error
+	Recv() (*HelloRequest, error)
+	grpc.ServerStream
+}
+
+type helloWorldServiceSayHelloClientStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *helloWorldServiceSayHelloClientStreamServer) SendAndClose(m *HelloReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *helloWorldServiceSayHelloClientStreamServer) Recv() (*HelloRequest, error) {
+	m := new(HelloRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func _HelloWorldService_SayHelloServerStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(HelloRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(HelloWorldServiceServer).SayHelloServerStream(m, &helloWorldServiceSayHelloServerStreamServer{ServerStream: stream})
+}
+
+type HelloWorldService_SayHelloServerStreamServer interface {
+	Send(*HelloReply) error
+	grpc.ServerStream
+}
+
+type helloWorldServiceSayHelloServerStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *helloWorldServiceSayHelloServerStreamServer) Send(m *HelloReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _HelloWorldService_SayHelloBidirectionalStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(HelloWorldServiceServer).SayHelloBidirectionalStream(&helloWorldServiceSayHelloBidirectionalStreamServer{ServerStream: stream})
+}
+
+type HelloWorldService_SayHelloBidirectionalStreamServer interface {
+	Send(*HelloReply) error
+	Recv() (*HelloRequest, error)
+	grpc.ServerStream
+}
+
+type helloWorldServiceSayHelloBidirectionalStreamServer struct {
+	grpc.ServerStream
+}
+
+func (x *helloWorldServiceSayHelloBidirectionalStreamServer) Send(m *HelloReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *helloWorldServiceSayHelloBidirectionalStreamServer) Recv() (*HelloRequest, error) {
+	m := new(HelloRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // HelloWorldService_ServiceDesc is the grpc.ServiceDesc for HelloWorldService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -105,6 +296,23 @@ var HelloWorldService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _HelloWorldService_SayHello_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "SayHelloClientStream",
+			Handler:       _HelloWorldService_SayHelloClientStream_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "SayHelloServerStream",
+			Handler:       _HelloWorldService_SayHelloServerStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "SayHelloBidirectionalStream",
+			Handler:       _HelloWorldService_SayHelloBidirectionalStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/hello.proto",
 }
