@@ -1,0 +1,25 @@
+services:
+  howbe-db:
+    build: ./howbe-db
+    image: howru0321/howbe-db
+    volumes:
+      - howbe-db:/app/src/sqlite
+    networks:
+      - howbe-network
+    depends_on:
+      - howbe-apiserver
+    #entrypoint: ["/app/wait-for-it.sh", "howbe-apiserver:8080", "--timeout=60", "--strict", "--", "node", "dist/main.js"]
+  howbe-apiserver:
+    build: ./howbe-apiserver
+    image: howru0321/howbe-apiserver
+    ports: 
+      - 8080:8080
+    networks:
+      - howbe-network
+
+volumes:
+  howbe-db:
+
+networks:
+  howbe-network:
+    driver: bridge

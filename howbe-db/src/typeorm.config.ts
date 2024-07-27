@@ -1,0 +1,25 @@
+import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+
+export const podDBConfig: TypeOrmModuleOptions = {
+  name: 'podConnection',
+  type: 'sqlite',
+  database: 'src/sqlite/pod.sqlite',
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  synchronize: true,
+};
+
+export const replicasetDBConfig: TypeOrmModuleOptions = {
+  name: 'replicasetConnection',
+  type: 'sqlite',
+  database: 'src/sqlite/replicaset.sqlite',
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  synchronize: true,
+};
+
+export const deploymentDBConfig: TypeOrmModuleOptions = {
+  name: 'deploymentConnection',
+  type: 'sqlite',
+  database: 'src/sqlite/deployment.sqlite',
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  synchronize: true,
+};
