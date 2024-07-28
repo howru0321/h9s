@@ -6,6 +6,8 @@
 
 /* eslint-disable */
 import * as _m0 from "protobufjs/minimal";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 
 export const protobufPackage = "hello";
 
@@ -133,6 +135,9 @@ export const HelloReply = {
 
 export interface HelloWorldService {
   SayHello(request: HelloRequest): Promise<HelloReply>;
+  SayHelloClientStream(request: Observable<HelloRequest>): Promise<HelloReply>;
+  SayHelloServerStream(request: HelloRequest): Observable<HelloReply>;
+  SayHelloBidirectionalStream(request: Observable<HelloRequest>): Observable<HelloReply>;
 }
 
 export const HelloWorldServiceServiceName = "hello.HelloWorldService";
@@ -143,16 +148,40 @@ export class HelloWorldServiceClientImpl implements HelloWorldService {
     this.service = opts?.service || HelloWorldServiceServiceName;
     this.rpc = rpc;
     this.SayHello = this.SayHello.bind(this);
+    this.SayHelloClientStream = this.SayHelloClientStream.bind(this);
+    this.SayHelloServerStream = this.SayHelloServerStream.bind(this);
+    this.SayHelloBidirectionalStream = this.SayHelloBidirectionalStream.bind(this);
   }
   SayHello(request: HelloRequest): Promise<HelloReply> {
     const data = HelloRequest.encode(request).finish();
     const promise = this.rpc.request(this.service, "SayHello", data);
     return promise.then((data) => HelloReply.decode(_m0.Reader.create(data)));
   }
+
+  SayHelloClientStream(request: Observable<HelloRequest>): Promise<HelloReply> {
+    const data = request.pipe(map((request) => HelloRequest.encode(request).finish()));
+    const promise = this.rpc.clientStreamingRequest(this.service, "SayHelloClientStream", data);
+    return promise.then((data) => HelloReply.decode(_m0.Reader.create(data)));
+  }
+
+  SayHelloServerStream(request: HelloRequest): Observable<HelloReply> {
+    const data = HelloRequest.encode(request).finish();
+    const result = this.rpc.serverStreamingRequest(this.service, "SayHelloServerStream", data);
+    return result.pipe(map((data) => HelloReply.decode(_m0.Reader.create(data))));
+  }
+
+  SayHelloBidirectionalStream(request: Observable<HelloRequest>): Observable<HelloReply> {
+    const data = request.pipe(map((request) => HelloRequest.encode(request).finish()));
+    const result = this.rpc.bidirectionalStreamingRequest(this.service, "SayHelloBidirectionalStream", data);
+    return result.pipe(map((data) => HelloReply.decode(_m0.Reader.create(data))));
+  }
 }
 
 interface Rpc {
   request(service: string, method: string, data: Uint8Array): Promise<Uint8Array>;
+  clientStreamingRequest(service: string, method: string, data: Observable<Uint8Array>): Promise<Uint8Array>;
+  serverStreamingRequest(service: string, method: string, data: Uint8Array): Observable<Uint8Array>;
+  bidirectionalStreamingRequest(service: string, method: string, data: Observable<Uint8Array>): Observable<Uint8Array>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

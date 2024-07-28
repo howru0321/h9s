@@ -4,6 +4,9 @@ package hello;
 
 service HelloWorldService {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc SayHelloClientStream (stream HelloRequest) returns (HelloReply) {}
+  rpc SayHelloServerStream (HelloRequest) returns (stream HelloReply) {}
+  rpc SayHelloBidirectionalStream (stream HelloRequest) returns (stream HelloReply) {}
 }
 
 message HelloRequest {
