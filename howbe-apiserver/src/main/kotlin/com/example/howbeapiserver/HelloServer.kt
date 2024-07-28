@@ -5,6 +5,8 @@ import com.example.grpc.HelloReply
 import com.example.grpc.HelloWorldServiceGrpcKt
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.delay
 
 class HelloServer : HelloWorldServiceGrpcKt.HelloWorldServiceCoroutineImplBase() {
     override suspend fun sayHello(request: HelloRequest): HelloReply {
@@ -25,6 +27,7 @@ class HelloServer : HelloWorldServiceGrpcKt.HelloWorldServiceCoroutineImplBase()
         for (name in names) {
             val message = "Hello, $name! (from ${request.name})"
             emit(HelloReply.newBuilder().setMessage(message).build())
+            delay(500)
         }
     }
     override fun sayHelloBidirectionalStream(requests: Flow<HelloRequest>): Flow<HelloReply> = flow {
