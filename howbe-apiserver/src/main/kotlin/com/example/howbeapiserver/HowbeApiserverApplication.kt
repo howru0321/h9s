@@ -25,5 +25,5 @@ fun runHelloServer(){
 
 fun main(args: Array<String>) {
     runApplication<HowbeApiserverApplication>(*args)
-    //runHelloServer()
+    runHelloServer()
 }

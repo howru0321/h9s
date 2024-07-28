@@ -7,6 +7,6 @@ import org.springframework.context.annotation.Configuration
 class HelloClientConfig {
     @Bean
     fun helloClient(): HelloClient {
-        return HelloClient("localhost", 50051)
+        return HelloClient("howbe-db", 50052)
     }
 }
