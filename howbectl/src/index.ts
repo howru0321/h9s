@@ -3,13 +3,11 @@
 const { Command } = require("commander");
 const inquirer = require('inquirer');
 const pkg = require('../package.json');
-//const Configstore = require('configstore');
 const axios = require('axios');
 const Table = require('cli-table3');
 const fs = require('fs');
 const yaml = require('js-yaml');
 
-//const config = new Configstore(pkg.name);
 
 const masterNode = {
   ip : "localhost",
