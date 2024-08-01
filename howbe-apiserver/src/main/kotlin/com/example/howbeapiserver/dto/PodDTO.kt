@@ -1,6 +1,6 @@
 package com.example.howbeapiserver.dto
 
-data class PodRequest (
+data class PodDTO (
     val name: String,
     val containers : Array<ContainerMetadata>
 )

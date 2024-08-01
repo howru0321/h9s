@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package apiserveretcd;
+
+service ApiserverEtcdService {
+  rpc CreatePod(PodRequest) returns (PodResponse);
+}
+
+message PodRequest {
+  string name = 1;
+  repeated ContainerMetadata containers = 2;
+}
+
+message ContainerMetadata {
+  string name = 1;
+  string image = 2;
+}
+
+message PodResponse {
+  string message = 1;
+  string pod_id = 2;
+}

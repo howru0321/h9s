@@ -15,8 +15,8 @@ async function bootstrap() {
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.GRPC,
     options: {
-      package: 'hello',
-      protoPath: join(__dirname, './proto/hello.proto'),
+      package: 'apiserveretcd',
+      protoPath: join(__dirname, './proto/apiserveretcd.proto'),
       url: '0.0.0.0:50051',
     },
   });

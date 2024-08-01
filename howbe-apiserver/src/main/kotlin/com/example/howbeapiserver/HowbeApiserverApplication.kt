@@ -10,7 +10,7 @@ class HowbeApiserverApplication
 fun runHelloServer(){
     val helloServer = HelloServer()
     val server = ServerBuilder
-        .forPort(50051)
+        .forPort(50053)
         .addService(helloServer)
         .build()
 

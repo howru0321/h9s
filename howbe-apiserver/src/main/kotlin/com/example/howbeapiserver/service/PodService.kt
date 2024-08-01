@@ -1,14 +1,14 @@
 package com.example.howbeapiserver.service
 
-import com.example.howbeapiserver.dto.PodRequest
+import com.example.grpc.PodResponse
+import com.example.howbeapiserver.dto.PodDTO
+import com.example.howbeapiserver.grpcclient.EtcdClient
 import org.springframework.stereotype.Service
 
 @Service
-class PodService {
-    fun createPod(podRequest : PodRequest){
-        println(podRequest.name)
-        println(podRequest.containers[0].name)
-        println(podRequest.containers[0].image)
+class PodService(private val etcdClient: EtcdClient) {
+    suspend fun createPod(podMetadata : PodDTO) : PodResponse{
+        return etcdClient.createPod(podMetadata)
     }
 
 }
