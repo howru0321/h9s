@@ -7,6 +7,6 @@ import org.springframework.context.annotation.Configuration
 class EtcdClientConfig {
     @Bean
     fun etcdClient() : EtcdClient{
-        return EtcdClient("localhost",50051)
+        return EtcdClient("howbe-db",50051)
     }
 }

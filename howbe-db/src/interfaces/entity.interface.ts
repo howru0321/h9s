@@ -1,10 +1,10 @@
 export interface PodMetadata {
   name : string;
   bind : boolean;
-  containers : ContainerMetadata[];
+  containers : ContainerMetadatawithId[];
 }
 
-export class ContainerMetadata {
+export class ContainerMetadatawithId {
   id : string;
   name : string;
   image : string;
