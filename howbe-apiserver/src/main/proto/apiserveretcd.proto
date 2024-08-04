@@ -16,8 +16,9 @@ message PodRequest {
 }
 
 message ContainerMetadata {
-  string name = 1;
-  string image = 2;
+  string id =1;
+  string name = 2;
+  string image = 3;
 }
 
 message PodResponse {

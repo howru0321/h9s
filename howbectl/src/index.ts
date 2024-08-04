@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { PodDTO } from './interfaces/dto.interface'
+import { ContainerMetadata } from './proto/apiserveretcd';
+
 const { Command } = require("commander");
 const inquirer = require('inquirer');
 const pkg = require('../package.json');
@@ -28,13 +31,34 @@ const deleteCommand = program.command('delete').description('Delete object');
 
 async function podCreate (data : any){
   const podName : string = data.metadata.name;
-  const containers = data.spec.containers;
+  const containers : ContainerMetadata[] = data.spec.containers.map((container: ContainerMetadata) => {
+    return {
+      ...container,
+      id: null
+    };
+  });
+
+  
+
+  console.log(containers);
+
+  const request : PodDTO = {
+    name : podName,
+    containers : containers,
+  };
+
+  console.log(request.containers[0].id);
 
   try {
-    const response = await axios.post(`http://${masterNode.ip}:${masterNode.port}/api/v1/pod`, {
-      name: podName,
-      containers: containers
-    });
+    const response = await axios.post(
+      `http://${masterNode.ip}:${masterNode.port}/api/v1/pod`,
+      request,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
     console.log('Response:', response.data);
     } catch (error : any) {
       console.error('Error:', error.message);

@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.14.9",
+    "ts-proto": "^1.181.1",
     "typescript": "^5.5.2"
   },
   "dependencies": {

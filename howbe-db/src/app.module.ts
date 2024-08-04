@@ -23,7 +23,7 @@ import { PodModule } from './pod/pod.module';
     HelloModule,
     PodModule,
   ],
-  controllers: [AppController, HelloController, PodController],
-  providers: [AppService, HelloService, PodService],
+  controllers: [AppController, HelloController, ],
+  providers: [AppService, HelloService, ],
 })
 export class AppModule {}

@@ -34,7 +34,6 @@ class EtcdClient(host: String?, port: Int) {
                 .setImage(container.image)
             podRequestBuilder.addContainers(containerMetadata)
         }
-
         return podRequestBuilder.build()
     }
 }
