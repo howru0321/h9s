@@ -22,37 +22,21 @@ export class PodService implements ApiserverEtcdService {
     ){}
 
     async CreatePod(request: PodRequest): Promise<PodResponse> {
-        // const response: PodResponse = { 
-        //     podId: "podIdhow",
-        //     message: `Hello, ${request.name}, ${request.containers[0].name}, ${request.containers[1].image}`
-        // };
-        // return Promise.resolve(response);
         const podName : string = request.name;
         const containers : ContainerMetadata[] = request.containers;
         try{
-            // const id : string = null;
-            // const containers : ContainerMetadata[] = request.containers;
-            // for(const container of request.containers){
-            //     let containerMetadata : ContainerMetadatawithId;
-            //     containerMetadata.id=null;
-            //     containerMetadata.name=container.name;
-            //     containerMetadata.image=container.image;
-
-            //     containers.push(containerMetadata);
-            // }
-            
             const value : PodMetadata = {
                 name : podName,
                 bind : false,
                 containers : containers,
             }
-            const newUUID : string = await generateUUID([]);
-            const podId : string = podName + newUUID;
-            const pod = this.podRepository.create({ key : podId, value : value });
+            //const newUUID : string = await generateUUID([]);
+            //const podId : string = podName + newUUID;
+            const pod = this.podRepository.create({ key : null, value : value });
             await this.podRepository.save(pod);
 
             const response: PodResponse = { 
-                podId: podId,
+                podId: null,
                 message: `Create Pod Successfully!`
             };
             return response;
