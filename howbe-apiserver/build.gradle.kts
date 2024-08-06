@@ -36,6 +36,9 @@ dependencies {
     runtimeOnly("io.grpc:grpc-netty-shaded:$grpcVersion")
     compileOnly ("org.apache.tomcat:annotations-api:6.0.53")
     implementation("com.google.protobuf:protobuf-kotlin:$grpcProtobufVersion")
+
+    implementation("io.ktor:ktor-server-core:2.3.12")
+    implementation("io.ktor:ktor-server-netty:2.3.12")
 }
 
 sourceSets {
