@@ -11,12 +11,10 @@ import io.ktor.server.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.time.LocalTime
 import kotlin.concurrent.thread
-import java.util.*
+
+import com.example.howbeapiserver.scheduler.controller.configureRouting
 
 @SpringBootApplication
 class HowbeApiserverApplication
@@ -52,18 +50,18 @@ fun main(args: Array<String>) {
 }
 
 
-fun Application.configureRouting() {
-    routing {
-        get("/stream") {
-            call.response.cacheControl(CacheControl.NoCache(null))
-            call.respondTextWriter(contentType = ContentType.Text.EventStream) {
-                while (true) {
-                    val currentTime = LocalTime.now()
-                    write("data: The time is: $currentTime\n\n")
-                    flush()
-                    delay(1000)
-                }
-            }
-        }
-    }
-}
+//fun Application.configureRouting() {
+//    routing {
+//        get("/stream") {
+//            call.response.cacheControl(CacheControl.NoCache(null))
+//            call.respondTextWriter(contentType = ContentType.Text.EventStream) {
+//                while (true) {
+//                    val currentTime = LocalTime.now()
+//                    write("data: The time is: $currentTime\n\n")
+//                    flush()
+//                    delay(1000)
+//                }
+//            }
+//        }
+//    }
+//}

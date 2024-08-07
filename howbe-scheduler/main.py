@@ -1,9 +1,6 @@
 import asyncio
 import aiohttp
-from fastapi import FastAPI
 from sse_starlette.sse import EventSourceResponse
-
-app = FastAPI()
 
 async def event_generator():
     async with aiohttp.ClientSession() as session:
@@ -11,7 +8,11 @@ async def event_generator():
             async for line in response.content:
                 if line:
                     yield {"event": "message", "data": line.decode().strip()}
+                    
 
-@app.get("/sse")
-async def sse_endpoint():
-    return EventSourceResponse(event_generator())
+async def main():
+    async for event in event_generator():
+        print(event)
+
+if __name__ == "__main__":
+    asyncio.run(main())
