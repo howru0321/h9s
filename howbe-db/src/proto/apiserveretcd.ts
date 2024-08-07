@@ -10,11 +10,12 @@ import * as _m0 from "protobufjs/minimal";
 export const protobufPackage = "apiserveretcd";
 
 export interface PodRequest {
+  id: string;
   name: string;
-  containers: ContainerMetadata[];
+  containerStatuses: ContainerStatus[];
 }
 
-export interface ContainerMetadata {
+export interface ContainerStatus {
   id: string;
   name: string;
   image: string;
@@ -26,16 +27,19 @@ export interface PodResponse {
 }
 
 function createBasePodRequest(): PodRequest {
-  return { name: "", containers: [] };
+  return { id: "", name: "", containerStatuses: [] };
 }
 
 export const PodRequest = {
   encode(message: PodRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
     }
-    for (const v of message.containers) {
-      ContainerMetadata.encode(v!, writer.uint32(18).fork()).ldelim();
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    for (const v of message.containerStatuses) {
+      ContainerStatus.encode(v!, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -52,14 +56,21 @@ export const PodRequest = {
             break;
           }
 
-          message.name = reader.string();
+          message.id = reader.string();
           continue;
         case 2:
           if (tag !== 18) {
             break;
           }
 
-          message.containers.push(ContainerMetadata.decode(reader, reader.uint32()));
+          message.name = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.containerStatuses.push(ContainerStatus.decode(reader, reader.uint32()));
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -72,20 +83,24 @@ export const PodRequest = {
 
   fromJSON(object: any): PodRequest {
     return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
-      containers: globalThis.Array.isArray(object?.containers)
-        ? object.containers.map((e: any) => ContainerMetadata.fromJSON(e))
+      containerStatuses: globalThis.Array.isArray(object?.containerStatuses)
+        ? object.containerStatuses.map((e: any) => ContainerStatus.fromJSON(e))
         : [],
     };
   },
 
   toJSON(message: PodRequest): unknown {
     const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
     if (message.name !== "") {
       obj.name = message.name;
     }
-    if (message.containers?.length) {
-      obj.containers = message.containers.map((e) => ContainerMetadata.toJSON(e));
+    if (message.containerStatuses?.length) {
+      obj.containerStatuses = message.containerStatuses.map((e) => ContainerStatus.toJSON(e));
     }
     return obj;
   },
@@ -95,18 +110,19 @@ export const PodRequest = {
   },
   fromPartial<I extends Exact<DeepPartial<PodRequest>, I>>(object: I): PodRequest {
     const message = createBasePodRequest();
+    message.id = object.id ?? "";
     message.name = object.name ?? "";
-    message.containers = object.containers?.map((e) => ContainerMetadata.fromPartial(e)) || [];
+    message.containerStatuses = object.containerStatuses?.map((e) => ContainerStatus.fromPartial(e)) || [];
     return message;
   },
 };
 
-function createBaseContainerMetadata(): ContainerMetadata {
+function createBaseContainerStatus(): ContainerStatus {
   return { id: "", name: "", image: "" };
 }
 
-export const ContainerMetadata = {
-  encode(message: ContainerMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const ContainerStatus = {
+  encode(message: ContainerStatus, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -119,10 +135,10 @@ export const ContainerMetadata = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ContainerMetadata {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ContainerStatus {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseContainerMetadata();
+    const message = createBaseContainerStatus();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -156,7 +172,7 @@ export const ContainerMetadata = {
     return message;
   },
 
-  fromJSON(object: any): ContainerMetadata {
+  fromJSON(object: any): ContainerStatus {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : "",
       name: isSet(object.name) ? globalThis.String(object.name) : "",
@@ -164,7 +180,7 @@ export const ContainerMetadata = {
     };
   },
 
-  toJSON(message: ContainerMetadata): unknown {
+  toJSON(message: ContainerStatus): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
@@ -178,11 +194,11 @@ export const ContainerMetadata = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ContainerMetadata>, I>>(base?: I): ContainerMetadata {
-    return ContainerMetadata.fromPartial(base ?? ({} as any));
+  create<I extends Exact<DeepPartial<ContainerStatus>, I>>(base?: I): ContainerStatus {
+    return ContainerStatus.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<ContainerMetadata>, I>>(object: I): ContainerMetadata {
-    const message = createBaseContainerMetadata();
+  fromPartial<I extends Exact<DeepPartial<ContainerStatus>, I>>(object: I): ContainerStatus {
+    const message = createBaseContainerStatus();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.image = object.image ?? "";
@@ -265,7 +281,7 @@ export const PodResponse = {
 };
 
 export interface ApiserverEtcdService {
-  CreatePod(request: PodRequest): Promise<PodResponse>;
+  UpdatePodStatus(request: PodRequest): Promise<PodResponse>;
 }
 
 export const ApiserverEtcdServiceServiceName = "apiserveretcd.ApiserverEtcdService";
@@ -275,11 +291,11 @@ export class ApiserverEtcdServiceClientImpl implements ApiserverEtcdService {
   constructor(rpc: Rpc, opts?: { service?: string }) {
     this.service = opts?.service || ApiserverEtcdServiceServiceName;
     this.rpc = rpc;
-    this.CreatePod = this.CreatePod.bind(this);
+    this.UpdatePodStatus = this.UpdatePodStatus.bind(this);
   }
-  CreatePod(request: PodRequest): Promise<PodResponse> {
+  UpdatePodStatus(request: PodRequest): Promise<PodResponse> {
     const data = PodRequest.encode(request).finish();
-    const promise = this.rpc.request(this.service, "CreatePod", data);
+    const promise = this.rpc.request(this.service, "UpdatePodStatus", data);
     return promise.then((data) => PodResponse.decode(_m0.Reader.create(data)));
   }
 }

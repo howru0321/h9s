@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PodRequest, PodResponse, ApiserverEtcdService, ContainerMetadata } from '../proto/apiserveretcd';
+import { PodRequest, PodResponse, ApiserverEtcdService, ContainerStatus } from '../proto/apiserveretcd';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pod } from '../entities/pod.entity';
@@ -21,23 +21,24 @@ export class PodService implements ApiserverEtcdService {
         private readonly podRepository: Repository<Pod>,
     ){}
 
-    async CreatePod(request: PodRequest): Promise<PodResponse> {
+    async UpdatePodStatus(request: PodRequest): Promise<PodResponse> {
+        const podId : string = request.id;
         const podName : string = request.name;
-        const containers : ContainerMetadata[] = request.containers;
+        const containerStatuses : ContainerStatus[] = request.containerStatuses;
         try{
             const value : PodMetadata = {
                 name : podName,
                 bind : false,
-                containers : containers,
+                containerStatuses : containerStatuses,
             }
             //const newUUID : string = await generateUUID([]);
             //const podId : string = podName + newUUID;
-            const pod = this.podRepository.create({ key : null, value : value });
+            const pod = this.podRepository.create({ key : podId, value : value });
             await this.podRepository.save(pod);
 
             const response: PodResponse = { 
-                podId: null,
-                message: `Create Pod Successfully!`
+                podId: podId,
+                message: `Update Pod Status Successfully!`
             };
             return response;
         } catch (error) {

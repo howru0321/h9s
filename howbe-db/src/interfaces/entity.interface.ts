@@ -1,8 +1,8 @@
-import { ContainerMetadata } from '../proto/apiserveretcd';
+import { ContainerStatus } from '../proto/apiserveretcd';
 export interface PodMetadata {
   name : string;
   bind : boolean;
-  containers : ContainerMetadata[];
+  containerStatuses : ContainerStatus[];
 }
 
 export class ContainerInfo {

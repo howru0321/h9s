@@ -1,4 +1,4 @@
-package com.example.howbeapiserver.service
+package com.example.howbeapiserver.restapi.service
 
 import com.example.grpc.PodResponse
 import com.example.howbeapiserver.dto.PodDTO

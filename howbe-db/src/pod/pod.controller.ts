@@ -7,8 +7,8 @@ import { PodService } from './pod.service'
 export class PodController implements ApiserverEtcdService {
     constructor(private readonly podService: PodService) {}
 
-    @GrpcMethod('ApiserverEtcdService', 'CreatePod')
-    CreatePod(request: PodRequest): Promise<PodResponse> {
-      return this.podService.CreatePod(request);
+    @GrpcMethod('ApiserverEtcdService', 'UpdatePodStatus')
+    UpdatePodStatus(request: PodRequest): Promise<PodResponse> {
+      return this.podService.UpdatePodStatus(request);
     }
 }

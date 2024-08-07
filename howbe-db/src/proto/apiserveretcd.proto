@@ -3,15 +3,16 @@ syntax = "proto3";
 package apiserveretcd;
 
 service ApiserverEtcdService {
-  rpc CreatePod(PodRequest) returns (PodResponse);
+  rpc UpdatePodStatus(PodRequest) returns (PodResponse);
 }
 
 message PodRequest {
-  string name = 1;
-  repeated ContainerMetadata containers = 2;
+  string id = 1;
+  string name = 2;
+  repeated ContainerStatus containerStatuses = 3;
 }
 
-message ContainerMetadata {
+message ContainerStatus {
   string id = 1;
   string name = 2;
   string image = 3;
