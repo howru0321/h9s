@@ -1,4 +1,4 @@
-package com.example.howbeapiserver.scheduler.controller
+package com.example.howbeapiserver.watchapi.controller
 
 import io.ktor.http.*
 import io.ktor.server.application.*

@@ -1,7 +1,7 @@
 package com.example.howbeapiserver.grpcclient
 
 import com.example.grpc.*
-import com.example.howbeapiserver.dto.PodDTO
+import com.example.howbeapiserver.restapi.dto.PodDTO
 import com.example.grpc.ApiserverEtcdServiceGrpcKt
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
@@ -19,20 +19,21 @@ class EtcdClient(host: String?, port: Int) {
         coroutineStub = ApiserverEtcdServiceGrpcKt.ApiserverEtcdServiceCoroutineStub(managedChannel)
     }
 
-    suspend fun createPod(podMetadata: PodDTO): PodResponse {
+    suspend fun updatePodStatus(podMetadata: PodDTO): PodResponse {
         val request : PodRequest = buildRequest(podMetadata)
-        return coroutineStub!!.createPod(request)
+        return coroutineStub!!.updatePodStatus(request)
     }
 
     private fun buildRequest(podMetadata: PodDTO): PodRequest {
         val podRequestBuilder : PodRequest.Builder =
             PodRequest.newBuilder()
+                .setId(podMetadata.id)
                 .setName(podMetadata.name)
-        for(container in podMetadata.containers){
-            val containerMetadata = ContainerMetadata.newBuilder()
+        for(container in podMetadata.containerStatuses){
+            val containerMetadata = ContainerStatus.newBuilder()
                 .setName(container.name)
                 .setImage(container.image)
-            podRequestBuilder.addContainers(containerMetadata)
+            podRequestBuilder.addContainerStatuses(containerMetadata)
         }
         return podRequestBuilder.build()
     }

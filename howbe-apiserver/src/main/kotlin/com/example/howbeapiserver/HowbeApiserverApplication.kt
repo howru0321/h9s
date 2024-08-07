@@ -14,7 +14,7 @@ import kotlinx.coroutines.delay
 import java.time.LocalTime
 import kotlin.concurrent.thread
 
-import com.example.howbeapiserver.scheduler.controller.configureRouting
+import com.example.howbeapiserver.watchapi.controller.configureRouting
 
 @SpringBootApplication
 class HowbeApiserverApplication

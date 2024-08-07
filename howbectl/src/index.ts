@@ -38,16 +38,11 @@ async function podCreate (data : any){
     };
   });
 
-  
-
-  console.log(containers);
-
   const request : PodDTO = {
+    id : podName,
     name : podName,
-    containers : containers,
+    containerStatuses : containers,
   };
-
-  console.log(request.containers[0].id);
 
   try {
     const response = await axios.post(

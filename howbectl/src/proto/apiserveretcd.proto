@@ -8,10 +8,10 @@ service ApiserverEtcdService {
 
 message PodRequest {
   string name = 1;
-  repeated ContainerMetadata containers = 2;
+  repeated containerStatus containerStatuses = 2;
 }
 
-message ContainerMetadata {
+message containerStatus {
   string id = 1;
   string name = 2;
   string image = 3;

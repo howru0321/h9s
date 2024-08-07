@@ -1,19 +1,20 @@
-package com.example.howbeapiserver.dto
-import com.example.grpc.ContainerMetadata
+package com.example.howbeapiserver.restapi.dto
+import com.example.grpc.ContainerStatus
 
-data class ContainerMetadataDTO(
+data class ContainerStatusDTO(
     val id: String?,
     val name: String,
     val image: String
 )
 
 data class PodDTO (
+    val id: String,
     val name: String,
-    val containers : Array<ContainerMetadataDTO>
+    val containerStatuses : Array<ContainerStatusDTO>
 )
 
-fun ContainerMetadataDTO.toContainerMetadata(): ContainerMetadata {
-    return ContainerMetadata.newBuilder()
+fun ContainerStatusDTO.toContainerStatus(): ContainerStatus {
+    return ContainerStatus.newBuilder()
         .setId(this.id)
         .setName(this.name)
         .setImage(this.image)

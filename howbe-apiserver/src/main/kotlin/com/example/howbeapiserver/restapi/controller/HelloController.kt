@@ -1,4 +1,4 @@
-package com.example.howbeapiserver.controller
+package com.example.howbeapiserver.restapi.controller
 
 import com.example.grpc.HelloReply
 import org.springframework.web.bind.annotation.GetMapping
