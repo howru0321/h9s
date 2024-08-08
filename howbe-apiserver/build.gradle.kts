@@ -39,6 +39,7 @@ dependencies {
 
     implementation("io.ktor:ktor-server-core:2.3.12")
     implementation("io.ktor:ktor-server-netty:2.3.12")
+    implementation("redis.clients:jedis:5.1.4")
 }
 
 sourceSets {
