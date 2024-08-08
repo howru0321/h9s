@@ -1,8 +1,13 @@
 import { ContainerStatus } from '../proto/apiserveretcd';
-export interface PodMetadata {
+export interface PodStatus {
   name : string;
-  bind : boolean;
+  conditions : Conditions;
   containerStatuses : ContainerStatus[];
+}
+
+export class Conditions {
+  PodScheduled : boolean;
+  Initialized : boolean;
 }
 
 export class ContainerInfo {

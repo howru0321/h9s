@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
-import { PodMetadata } from '../interfaces/entity.interface'
+import { PodStatus } from '../interfaces/entity.interface'
 
 @Entity()
 export class Pod {
@@ -7,5 +7,5 @@ export class Pod {
     key: string;
   
     @Column('simple-json')
-    value: PodMetadata;
+    value: PodStatus;
 }

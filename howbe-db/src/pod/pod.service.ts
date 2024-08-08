@@ -3,7 +3,7 @@ import { PodRequest, PodResponse, ApiserverEtcdService, ContainerStatus } from '
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pod } from '../entities/pod.entity';
-import { PodMetadata } from '../interfaces/entity.interface'
+import { PodStatus, Conditions } from '../interfaces/entity.interface'
 import { v4 as uuidv4 } from 'uuid';
 
 async function generateUUID(existingUUIDs: string[]): Promise<string> {
@@ -26,9 +26,13 @@ export class PodService implements ApiserverEtcdService {
         const podName : string = request.name;
         const containerStatuses : ContainerStatus[] = request.containerStatuses;
         try{
-            const value : PodMetadata = {
+            const conditions : Conditions = {
+                PodScheduled : false,
+                Initialized : false,
+            }
+            const value : PodStatus = {
                 name : podName,
-                bind : false,
+                conditions : conditions,
                 containerStatuses : containerStatuses,
             }
             //const newUUID : string = await generateUUID([]);

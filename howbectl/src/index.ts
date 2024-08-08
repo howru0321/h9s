@@ -31,15 +31,15 @@ const deleteCommand = program.command('delete').description('Delete object');
 
 async function podCreate (data : any){
   const podName : string = data.metadata.name;
-  const containers : ContainerMetadata[] = data.spec.containers.map((container: ContainerMetadata) => {
-    return {
-      ...container,
-      id: null
-    };
-  });
+  // const containers : ContainerMetadata[] = data.spec.containers.map((container: ContainerMetadata) => {
+  //   return {
+  //     ...container,
+  //     id: null
+  //   };
+  // });
+  const containers : ContainerMetadata[] = data.spec.containers;
 
   const request : PodDTO = {
-    id : podName,
     name : podName,
     containerStatuses : containers,
   };

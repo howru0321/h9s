@@ -1,6 +1,7 @@
 package com.example.howbeapiserver.restapi.controller
 
 import com.example.grpc.PodResponse
+import com.example.howbeapiserver.grpcclient.interfaces.PodStatus
 import com.example.howbeapiserver.restapi.dto.PodDTO
 import com.example.howbeapiserver.restapi.service.PodService
 import kotlinx.coroutines.runBlocking
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 class PodController(private val podService: PodService) {
     @PostMapping("", consumes = ["application/json"])
     fun creatPod(@RequestBody podRequest : PodDTO) : String{
-        val response = runBlocking<PodResponse>{ podService.updatePodStatus(podRequest) }
+        val response = runBlocking<PodResponse>{ podService.createPod(podRequest) }
         return "PodId: ${response.podId}, Message: ${response.message}"
     }
 }
