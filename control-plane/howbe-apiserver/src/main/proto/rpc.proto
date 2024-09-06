@@ -1,0 +1,146 @@
+syntax = "proto3";
+package etcdserverpb;
+
+option java_multiple_files = true;
+option java_package = "com.example.grpc";
+
+import "kv.proto";
+
+service KV {
+  // Range gets the keys in the range from the key-value store.
+  rpc Range(RangeRequest) returns (RangeResponse);
+
+  // Put puts the given key into the key-value store.
+  // A put request increments the revision of the key-value store
+  // and generates one event in the event history.
+  rpc Put(PutRequest) returns (PutResponse);
+
+  // DeleteRange deletes the given range from the key-value store.
+  // A delete request increments the revision of the key-value store
+  // and generates a delete event in the event history for every deleted key.
+  rpc DeleteRange(DeleteRangeRequest) returns (DeleteRangeResponse);
+}
+
+message RangeRequest {
+  // key is the first key for the range. If range_end is not given, the request only looks up key.
+  bytes key = 1;
+  // range_end is the upper bound on the requested range [key, range_end).
+  // If range_end is '\0', the range is all keys >= key.
+  // If range_end is key plus one (e.g., "aa"+1 == "ab", "a\xff"+1 == "b"),
+  // then the range request gets all keys prefixed with key.
+  // If both key and range_end are '\0', then the range request returns all keys.
+  bytes range_end = 2;
+  // limit is a limit on the number of keys returned for the request. When limit is set to 0,
+  // it is treated as no limit.
+  int64 limit = 3;
+
+  // keys_only when set returns only the keys and not the values.
+  bool keys_only = 4;
+
+  // count_only when set returns only the count of the keys in the range.
+  bool count_only = 5;
+}
+message RangeResponse {
+  repeated mvccpb.KeyValue kvs = 1;
+  // count is set to the number of keys within the range when requested.
+  int64 count = 2;
+}
+
+message PutRequest {
+  // key is the key, in bytes, to put into the key-value store.
+  bytes key = 1;
+  // value is the value, in bytes, to associate with the key in the key-value store.
+  bytes value = 2;
+  // If prev_kv is set, etcd gets the previous key-value pair before changing it.
+  // The previous key-value pair will be returned in the put response.
+  bool prev_kv = 3;
+}
+message PutResponse {
+  // if prev_kv is set in the request, the previous key-value pair will be returned.
+  mvccpb.KeyValue prev_kv = 1;
+}
+
+message DeleteRangeRequest {
+  // key is the first key to delete in the range.
+  bytes key = 1;
+  // range_end is the key following the last key to delete for the range [key, range_end).
+  // If range_end is not given, the range is defined to contain only the key argument.
+  // If range_end is one bit larger than the given key, then the range is all the keys
+  // with the prefix (the given key).
+  // If range_end is '\0', the range is all keys greater than or equal to the key argument.
+  bytes range_end = 2;
+
+  // If prev_kv is set, etcd gets the previous key-value pairs before deleting it.
+  // The previous key-value pairs will be returned in the delete response.
+  bool prev_kv = 3;
+}
+message DeleteRangeResponse {
+  int64 deleted = 1;
+  // if prev_kv is set in the request, the previous key-value pairs will be returned.
+  repeated mvccpb.KeyValue prev_kvs = 2;
+}
+
+
+service Watch {
+  // Watch watches for events happening or that have happened. Both input and output
+  // are streams; the input stream is for creating and canceling watchers and the output
+  // stream sends events. One watch RPC can watch on multiple key ranges, streaming events
+  // for several watches at once. The entire event history can be watched starting from the
+  // last compaction revision.
+  rpc Watch(stream WatchRequest) returns (stream WatchResponse);
+}
+
+message WatchRequest {
+  // request_union is a request to either create a new watcher or cancel an existing watcher.
+  oneof request_union {
+    WatchCreateRequest create_request = 1;
+    WatchCancelRequest cancel_request = 2;
+  }
+}
+message WatchCreateRequest {
+  // key is the key to register for watching.
+  bytes key = 1;
+
+  // range_end is the end of the range [key, range_end) to watch. If range_end is not given,
+  // only the key argument is watched. If range_end is equal to '\0', all keys greater than
+  // or equal to the key argument are watched.
+  // If the range_end is one bit larger than the given key,
+  // then all keys with the prefix (the given key) will be watched.
+  bytes range_end = 2;
+
+  enum FilterType {
+    // filter out put event.
+    NOPUT = 0;
+    // filter out delete event.
+    NODELETE = 1;
+  }
+
+  // filters filter the events at server side before it sends back to the watcher.
+  repeated FilterType filters = 3;
+
+  int64 watch_id = 4;
+}
+message WatchCancelRequest {
+  // watch_id is the watcher id to cancel so that no more events are transmitted.
+  int64 watch_id = 1;
+}
+
+message WatchResponse {
+  // watch_id is the ID of the watcher that corresponds to the response.
+  int64 watch_id = 1;
+
+  // created is set to true if the response is for a create watch request.
+  // The client should record the watch_id and expect to receive events for
+  // the created watcher from the same stream.
+  // All events sent to the created watcher will attach with the same watch_id.
+  bool created = 2;
+
+  // canceled is set to true if the response is for a cancel watch request.
+  // No further events will be sent to the canceled watcher.
+  bool canceled = 3;
+
+  // cancel_reason indicates the reason for canceling the watcher.
+  string cancel_reason = 4;
+
+  repeated mvccpb.Event events = 5;
+}

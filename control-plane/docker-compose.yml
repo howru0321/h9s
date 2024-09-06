@@ -1,0 +1,47 @@
+services:
+  redis:
+    image: "redis:latest"
+    ports:
+      - 6379:6379
+    networks:
+      - howbe-network
+  howbe-apiserver:
+    build: ./howbe-apiserver
+    image: howru0321/howbe-apiserver
+    ports: 
+      - 8081:8081
+    environment:
+      - SPRING_APPLICATION_NAME=howbe-apiserver
+      - GRPC_STUB_HOST=howbe-db
+      - SERVER_PORT=8081
+    networks:
+      - howbe-network
+  howbe-db:
+    build: ./howbe-db
+    image: howru0321/howbe-db
+    volumes:
+      - howbe-db:/app/src/sqlite
+    networks:
+      - howbe-network
+    depends_on:
+      - howbe-apiserver
+    #entrypoint: ["/app/wait-for-it.sh", "howbe-apiserver:8080", "--timeout=60", "--strict", "--", "node", "dist/main.js"]
+  howbe-scheduler:
+    build: ./howbe-scheduler
+    image: howru0321/howbe-scheduler
+    networks:
+      - howbe-network
+    depends_on:
+      - howbe-db
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      APISERVER_HOST: howbe-apiserver
+    entrypoint: ["/app/wait-for-it.sh", "howbe-apiserver:8081", "--timeout=60", "--strict", "--", "python", "-u", "main.py"]
+
+volumes:
+  howbe-db:
+
+networks:
+  howbe-network:
+    driver: bridge

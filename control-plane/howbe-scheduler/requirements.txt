@@ -1,0 +1,5 @@
+aiohttp==3.10.1
+redis==5.0.8
+sseclient==0.0.27
+dacite
+requests
