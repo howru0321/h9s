@@ -62,18 +62,6 @@ async function getPodByName(name : string){
   }
 }
 
-async function getNodes() {
-  try {
-    const response = await axios.get(
-      `http://${masterNode.ip}:${masterNode.port}/api/v1/nodes`
-    );
-    const data = response.data;
-    console.log(data);
-  } catch (error : any) {
-    console.error('Error:', error.message);
-  }
-}
-
 getCommand
   .argument('<resource>', 'Resource to get (e.g., pods)')
   .argument('[name]', 'Name of the specific resource to get (optional)')
@@ -84,13 +72,7 @@ getCommand
       }else{
         await getPods();
       }
-    } else if (resource === "nodes") {
-      if(name){
-
-      }else{
-        await getNodes();
-      }
-    }
+    } 
     else {
       console.log(`Resource ${resource} is not supported.`);
     }
@@ -107,7 +89,7 @@ async function deletePod(name : string){
       `http://${masterNode.ip}:${masterNode.port}/api/v1/pods/${name}`
     );
     const data = response.data;
-    console.log('Full Response:', JSON.stringify(data, null, 2));
+    console.log(data);
   } catch (error : any) {
     console.error('Error:', error.message);
   }
@@ -133,8 +115,6 @@ const createCommand =
 
 async function createPod (data : any){
   const request : PodStatusDTO = createPodStatusDTO(data)
-  console.log('Request:', request);
-  console.log('Request:', JSON.stringify(request, null, 2));
   try {
     const response = await axios.post(
       `http://${masterNode.ip}:${masterNode.port}/api/v1/pods`,
@@ -145,7 +125,7 @@ async function createPod (data : any){
         }
       }
     );
-    console.log('Response:', response.data);
+    console.log(response.data);
     } catch (error : any) {
       console.error('Error:', error.message);
       }
