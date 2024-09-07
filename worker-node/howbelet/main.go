@@ -92,8 +92,6 @@ func requestStatus(jsonData []byte, apiUrl string) error {
 		return fmt.Errorf("received non-OK response: %s, body: %s", resp.Status, string(body))
 	}
 
-	//fmt.Printf("Successfully request. Response: %s\n", string(body))
-
 	return nil
 }
 
@@ -126,14 +124,12 @@ func watchPods() {
 		return
 	}
 	for event := range events {
-		fmt.Printf("Event: %s, Data: %s\n", event.Event, event.Data)
 		podStatus, prePodStatus, err := dto.PodStatusDTOFromJSON(event.Data)
 		if err != nil {
 			fmt.Printf("Error parsing JSON: %v\n", err)
 			return
 		}
 
-		println("event :" + string(event.Event))
 		if string(event.Event) == "MODIFIED" {
 			if podStatus.Status.Phase == "Pending" {
 				pod_uid := podStatus.Metadata.UID
@@ -155,7 +151,6 @@ func watchPods() {
 				}
 			}
 		} else if string(event.Event) == "DELETED" {
-			println("ddddddddddd")
 			containerIDs := ExtractContainerIDs(prePodStatus)
 
 			// Then, remove all the containers

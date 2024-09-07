@@ -140,12 +140,9 @@ class WatchStub(
                 val watch_id = response.watchId
                 val outerJsonElement: JsonObject = JsonParser.parseString(value).asJsonObject
                 val type: String = outerJsonElement.get("type")?.asString ?: ""
-                println("typetype:${type}")
                 try {
                     if(matchesFieldSelector(value,getFieldSelectorResult(watch_id))){
                         val response2client = combineJsonStrings(value, pre_value)
-                        //val sseData = "event: $type\ndata: ${response2client}\n\n"
-                        //val event_name = "${type}"
                         val data = "${response2client}\n\n"
                         val sseData = SseEmitter.event()
                             .name(type)

@@ -23,7 +23,6 @@ def event_generator_nodes():
             data = parse_sse_message(msg)
             if data:
                 node : NodeStatusDTO = parse_json_to_object_status(data)
-                print("kind(node)", node.kind)
                 yield node.to_json()
     except Exception as e:
         print(f"Error in SSE connection: {e}")
@@ -44,12 +43,8 @@ def process_events_nodes():
     while True:
         task = redis_client.rpop('nodes')
         if task:
-            print(task)
             node : NodeStatusDTO = NodeStatusDTO.from_json(task)
             node_status_cache.set(node)
-            #node_cache.update(event)
-            #print("node_cache:", node_cache.get(event['nodeStatus']['basicInfo']['name']))
-            #print("Processing node event at:", event['type'])
         else:
             print("No node tasks in the queue, waiting...")
         time.sleep(5)

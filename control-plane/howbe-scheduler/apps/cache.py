@@ -12,7 +12,6 @@ class NodeStatusCache:
         return self.cache
 
     def set(self, node_status: NodeStatusDTO):
-        print("node_status.metadata.uid", node_status.metadata.uid)
         if node_status.metadata.uid:
             self.cache[node_status.metadata.uid] = node_status
 

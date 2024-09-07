@@ -22,7 +22,7 @@ class PodController(private val podService: PodService) {
             if (response.kvsCount > 0) {
                 response.getKvs(0).value.toStringUtf8()
             } else {
-                "No pod : ${podName} found"
+                ""
             }
         } catch (e: IndexOutOfBoundsException) {
             "Error: No data available"
@@ -47,7 +47,7 @@ class PodController(private val podService: PodService) {
                         kv.value.toStringUtf8()
                     }
                 } else {
-                    listOf("No pods found")
+                    listOf("")
                 }
             } catch (e: IndexOutOfBoundsException) {
                 listOf("Error: No data available")
@@ -91,7 +91,7 @@ class PodController(private val podService: PodService) {
     }
 
     @PostMapping("{podName}")
-    fun updatePod(@PathVariable podName: String, @RequestBody createPodStatusRequest : PodStatusDTO) : String{
+    fun updatePod(@PathVariable podName: String, @RequestBody updatePodStatusRequest : PodStatusDTO) : String{
         val rangeResponse : RangeResponse =
             runBlocking<RangeResponse> { podService.getPodByName(podName) }
 
@@ -105,8 +105,7 @@ class PodController(private val podService: PodService) {
             "An unexpected error occurred: ${e.message}"
         }
         val putResponse : PutResponse =
-            runBlocking <PutResponse> { podService.updatePod(podName, createPodStatusRequest) }
-        println(createPodStatusRequest)
+            runBlocking <PutResponse> { podService.updatePod(podName, updatePodStatusRequest) }
         return "Successfully update ${podName} pod"
     }
 
@@ -117,7 +116,8 @@ class PodController(private val podService: PodService) {
 
         return try {
             if (response.deleted > 0) {
-                response.getPrevKvs(0).value.toStringUtf8()
+                //response.getPrevKvs(0).value.toStringUtf8()
+                "Successfully delete ${podName} pod"
             } else {
                 "No pod : ${podName} found"
             }

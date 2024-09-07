@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { PodStatusDTO, createPodStatusDTO } from './interfaces/pod_status.interface'
-
+import { printPodStatus, isValidJSON } from './utils/print'
 const { Command } = require("commander");
 const inquirer = require('inquirer');
 const pkg = require('../package.json');
@@ -34,8 +34,13 @@ async function getPods() {
     const response = await axios.get(
       `http://${masterNode.ip}:${masterNode.port}/api/v1/pods`
     );
-    const data = response.data;
-    console.log('Full Response:', data);
+    const data : string[] = response.data;
+    if(!isValidJSON(data[0])){
+      console.log("No pods found");
+      return;
+    }
+    const input_data : PodStatusDTO[] = data.map((pod : string) => JSON.parse(pod) as PodStatusDTO)
+    printPodStatus(input_data)
   } catch (error : any) {
     console.error('Error:', error.message);
   }
@@ -46,8 +51,12 @@ async function getPodByName(name : string){
     const response = await axios.get(
       `http://${masterNode.ip}:${masterNode.port}/api/v1/pods/${name}`
     );
-    const data = response.data;
-    console.log('Full Response:', JSON.stringify(data, null, 2));
+    if(!isValidJSON(response.data)){
+      console.log("No pods found");
+      return;
+    }
+    const data : PodStatusDTO = response.data;
+    printPodStatus([data])
   } catch (error : any) {
     console.error('Error:', error.message);
   }
@@ -59,7 +68,7 @@ async function getNodes() {
       `http://${masterNode.ip}:${masterNode.port}/api/v1/nodes`
     );
     const data = response.data;
-    console.log('Full Response:', data);
+    console.log(data);
   } catch (error : any) {
     console.error('Error:', error.message);
   }

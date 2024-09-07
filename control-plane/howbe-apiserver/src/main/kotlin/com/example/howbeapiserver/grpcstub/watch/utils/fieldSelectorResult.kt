@@ -48,7 +48,6 @@ fun matchesFieldSelector(jsonString: String, fieldSelector: FieldSelectorResult?
     // Convert the "object" JsonElement back to a JSON string
     val objectJsonString = gson.toJson(objectJsonElement)
 
-    println("obejctJsonString : ${objectJsonString}")
 
     // Now parse the object JSON string
     val jsonElement = JsonParser.parseString(objectJsonString)
@@ -61,9 +60,6 @@ fun matchesFieldSelector(jsonString: String, fieldSelector: FieldSelectorResult?
             else -> null
         }
     }
-
-    println("fieldValue:${fieldValue}")
-    println("fieldSelector: ${fieldSelector}")
 
     // If fieldValue is null, it means the field doesn't exist in the JSON
     if (fieldValue == null) {

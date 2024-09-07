@@ -7,7 +7,7 @@ services:
       - howbe-network
   howbe-apiserver:
     build: ./howbe-apiserver
-    image: howru0321/howbe-apiserver
+    image: howru0321/howbe-apiserver:1.0.1
     ports: 
       - 8081:8081
     environment:
@@ -18,7 +18,7 @@ services:
       - howbe-network
   howbe-db:
     build: ./howbe-db
-    image: howru0321/howbe-db
+    image: howru0321/howbe-db:1.0.1
     volumes:
       - howbe-db:/app/src/sqlite
     networks:
@@ -28,7 +28,7 @@ services:
     #entrypoint: ["/app/wait-for-it.sh", "howbe-apiserver:8080", "--timeout=60", "--strict", "--", "node", "dist/main.js"]
   howbe-scheduler:
     build: ./howbe-scheduler
-    image: howru0321/howbe-scheduler
+    image: howru0321/howbe-scheduler:1.0.1
     networks:
       - howbe-network
     depends_on:

@@ -13,16 +13,6 @@ from apps.dataclass.node_status import NodeStatusDTO
 from apps.utils.redis import redis_client
 from apps.utils.scheduler import filtering_nodes, scoring_nodes, schedule_pod
 
-# redis_host = os.getenv('REDIS_HOST', 'localhost')
-# redis_port = int(os.getenv('REDIS_PORT', 6379))
-# redis_client = redis.Redis(
-#     host=redis_host,
-#     port=redis_port,
-#     db=0,
-#     socket_timeout=5,
-#     retry_on_timeout=True
-# )
-
 apiserver_host = os.getenv('APISERVER_HOST', 'localhost')
 
 def binding(podName : str, bindingNodeName : str):
@@ -87,8 +77,6 @@ def process_events_pods():
                 continue
             podName : str = pod.metadata.name
             bindingNodeName : Optional[str] = schedule_pod(pod)
-            print("podName:", podName)
-            print("bindingNodeName:", bindingNodeName)
             binding(podName, bindingNodeName)
         else:
             print("No pod tasks in the queue, waiting...")
