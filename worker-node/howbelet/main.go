@@ -10,15 +10,29 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
 )
 
 var (
-	hostname = "localhost"
-	port     = "8081"
+	nodeName string
+	hostname string
+	port     string
 )
+
+func init() {
+	nodeName = getEnv("NODE_NAME", "node1")
+	hostname = getEnv("API_SERVER_HOST", "localhost")
+	port = getEnv("API_SERVER_PORT", "8081")
+}
+func getEnv(key, fallback string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return fallback
+}
 
 func sendNodeInfo(node_name string, create bool) error {
 	UpdateNodeStatus, err := dto.GetUpdateNodeStatus(node_name)
@@ -170,7 +184,6 @@ func watchPods(nodeName string) {
 }
 
 func main() {
-	nodeName := "node1"
 
 	var wg sync.WaitGroup
 	wg.Add(3)
