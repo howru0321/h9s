@@ -15,6 +15,11 @@ import (
 	"time"
 )
 
+var (
+	hostname = "localhost"
+	port     = "8081"
+)
+
 func sendNodeInfo(node_name string, create bool) error {
 	UpdateNodeStatus, err := dto.GetUpdateNodeStatus(node_name)
 	if err != nil {
@@ -28,9 +33,9 @@ func sendNodeInfo(node_name string, create bool) error {
 
 	var apiUrl string
 	if create {
-		apiUrl = "http://localhost:8081/api/v1/nodes"
+		apiUrl = fmt.Sprintf("http://%s:%s/api/v1/api/v1/nodes", hostname, port)
 	} else {
-		apiUrl = fmt.Sprintf("http://localhost:8081/api/v1/nodes/%s", node_name)
+		apiUrl = fmt.Sprintf("http://%s:%s/api/v1/nodes/%s", hostname, port, node_name)
 	}
 
 	requestStatus(jsonData, apiUrl)
@@ -52,7 +57,7 @@ func sendPodInfo() error {
 			continue
 		}
 
-		apiUrl := "http://localhost:8081/api/v1/pods/" + podName
+		apiUrl := fmt.Sprintf("http://%s:%s/api/v1/pods/%s", hostname, port, podName)
 
 		jsonData, err := json.Marshal(podStatus)
 		if err != nil {
@@ -108,10 +113,11 @@ func ExtractContainerIDs(pod *dto.PodStatusDTO) []string {
 	return containerIDs
 }
 
-func watchPods() {
+func watchPods(nodeName string) {
 	fmt.Printf("watchPods")
-	url := "http://localhost:8081/api/v1/pods?watch=true&fieldSelector=spec.nodeName=node1"
-	client := sse.NewClient(url)
+
+	apiUrl := fmt.Sprintf("http://%s:%s/api/v1/pods?watch=true&fieldSelector=spec.nodeName=%s", hostname, port, nodeName)
+	client := sse.NewClient(apiUrl)
 
 	events := make(chan *sse.Event)
 	err := client.SubscribeChan("messages", events)
@@ -164,24 +170,23 @@ func watchPods() {
 }
 
 func main() {
+	nodeName := "node1"
 
 	var wg sync.WaitGroup
 	wg.Add(3)
 
 	go func() {
 		defer wg.Done()
-		watchPods()
+		watchPods(nodeName)
 	}()
 
 	go func() {
 		defer wg.Done()
 		ticker := time.NewTicker(10 * time.Second)
 		defer ticker.Stop()
-
-		node_name := "node1"
-		sendNodeInfo(node_name, true)
+		sendNodeInfo(nodeName, true)
 		for range ticker.C {
-			sendNodeInfo(node_name, false)
+			sendNodeInfo(nodeName, false)
 		}
 	}()
 
