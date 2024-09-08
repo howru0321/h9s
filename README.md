@@ -23,15 +23,3 @@ To use h9s, you'll need to set up the control plane on one local machine and the
 - [Worker Node Setup](./worker-node/README.md)
 
 These README files contain all the necessary information to get each component up and running, as well as instructions for connecting the worker node to the control plane.
-
-## Features (TBA)
-
-[List the features you plan to implement]
-
-## Contributing
-
-[Guidelines for contributing to the project]
-
-## License
-
-[Your chosen license]
