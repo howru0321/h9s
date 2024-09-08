@@ -89,16 +89,3 @@ To create a pod, you'll need to provide a YAML file. Here's an example:
    ```
    howbectl create -f my-pod.yaml
    ```
-
-### Troubleshooting
-
-If you encounter any issues:
-
-1. Ensure your h9s cluster is running and accessible.
-2. Check that the master node IP and port are correctly configured.
-3. Verify that you have the necessary permissions to perform the operations.
-
-For more detailed information on available commands and their usage, run:
-```
-howbectl --help
-```
