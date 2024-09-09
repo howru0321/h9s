@@ -47,7 +47,7 @@ func sendNodeInfo(node_name string, create bool) error {
 
 	var apiUrl string
 	if create {
-		apiUrl = fmt.Sprintf("http://%s:%s/api/v1/api/v1/nodes", hostname, port)
+		apiUrl = fmt.Sprintf("http://%s:%s/api/v1/nodes", hostname, port)
 	} else {
 		apiUrl = fmt.Sprintf("http://%s:%s/api/v1/nodes/%s", hostname, port, node_name)
 	}

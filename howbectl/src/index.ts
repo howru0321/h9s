@@ -51,7 +51,7 @@ async function getPodByName(name : string){
     const response = await axios.get(
       `http://${masterNode.ip}:${masterNode.port}/api/v1/pods/${name}`
     );
-    if(!isValidJSON(response.data)){
+    if(response.data == ""){
       console.log("No pods found");
       return;
     }

@@ -10,14 +10,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.google.protobuf.ByteString
 
 
-fun toPutRequest(nodeName : String, objectStatusDTO: ObjectStatusDTO) : PutRequest {
+fun toPutRequest(name : String, objectStatusDTO: ObjectStatusDTO) : PutRequest {
     val mapper = jacksonObjectMapper().apply {
         enable(SerializationFeature.INDENT_OUTPUT)
     }
     val objectType : String = objectStatusDTO.kind
     val json = mapper.writeValueAsString(objectStatusDTO)
     return PutRequest.newBuilder()
-        .setKey(ByteString.copyFromUtf8(createKey(objectType,nodeName)))
+        .setKey(ByteString.copyFromUtf8(createKey(objectType,name)))
         .setValue(ByteString.copyFromUtf8(json))
         .setPrevKv(true)
         .build()

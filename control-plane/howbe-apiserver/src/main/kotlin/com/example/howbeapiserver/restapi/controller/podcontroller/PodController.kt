@@ -85,7 +85,7 @@ class PodController(private val podService: PodService) {
                 containerStatuses = null
             )
         }
-                val putResponse : PutResponse =
+        val putResponse : PutResponse =
             runBlocking <PutResponse> { podService.updatePod(podName, createPodStatusRequest) }
         return "Successfully create ${podName} pod"
     }
@@ -97,7 +97,7 @@ class PodController(private val podService: PodService) {
 
         try {
             if (rangeResponse.kvsCount == 0) {
-                return "${podName} pod is deleted"
+                return "${podName} pod is not exist"
             }
         } catch (e: IndexOutOfBoundsException) {
             "Error: No data available"

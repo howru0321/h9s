@@ -44,6 +44,7 @@ def process_events_nodes():
         task = redis_client.rpop('nodes')
         if task:
             node : NodeStatusDTO = NodeStatusDTO.from_json(task)
+            print("node name:",node.metadata.name)
             node_status_cache.set(node)
         else:
             print("No node tasks in the queue, waiting...")

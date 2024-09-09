@@ -79,6 +79,18 @@ class NodeController(private val nodeService: NodeService) {
     }
     @PostMapping("{nodeName}")
     fun updateNode(@PathVariable nodeName: String, @RequestBody updateNodeStatusRequest : NodeStatusDTO): String {
+        val rangeResponse : RangeResponse =
+            runBlocking<RangeResponse> { nodeService.getNodeByName(nodeName) }
+
+        try {
+            if (rangeResponse.kvsCount == 0) {
+                return "${nodeName} node is not exist"
+            }
+        } catch (e: IndexOutOfBoundsException) {
+            "Error: No data available"
+        } catch (e: Exception) {
+            "An unexpected error occurred: ${e.message}"
+        }
         val response : PutResponse =
             runBlocking<PutResponse>{ nodeService.updateNode(nodeName, updateNodeStatusRequest) }
         return "Successfully update ${nodeName} node"

@@ -21,7 +21,7 @@ class PodService(private val kvStub: KVStub, private val watchStub: WatchStub) {
         return kvStub.Put(toPutRequest(podName, updatePodStatusRequest))
     }
     suspend fun getPodByName(podName : String): RangeResponse{
-        val key = createKey("Pod",podName)
+        val key = createKey("Pod", podName)
         return kvStub.Range(
             toRangeRequest(key, null, 0, false, false)
         )

@@ -25,7 +25,6 @@ services:
       - howbe-network
     depends_on:
       - howbe-apiserver
-    #entrypoint: ["/app/wait-for-it.sh", "howbe-apiserver:8080", "--timeout=60", "--strict", "--", "node", "dist/main.js"]
   howbe-scheduler:
     build: ./howbe-scheduler
     image: howru0321/howbe-scheduler:1.0.1

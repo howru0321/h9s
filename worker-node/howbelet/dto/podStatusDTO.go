@@ -109,6 +109,9 @@ func UpdatePodStatusDTO(podName string) (*PodStatusDTO, error) {
 	// Step 3: Create the PodStatusDTO struct with the specified fields
 	podStatus := &PodStatusDTO{
 		Kind: "Pod",
+		Metadata: MetadataDTO{
+			Name: podName,
+		},
 		Status: StatusDTO{
 			Phase:             pod_state,
 			ContainerStatuses: containerStatuses,
