@@ -17,11 +17,70 @@ Through this project, I aim to deepen my understanding of distributed systems ar
 
 ## Components
 
-h9s consists of three main components:
+The h9s architecture consists of the following main components:
 
-1. Control Plane
-2. Worker Node
-3. howbectl (CLI tool)
+1. **Control Plane**:
+   - **howbe-apiserver**: The central management entity that processes API requests.
+   - **howbe-db**: Stores the cluster's state information.
+   - **howbe-scheduler**: Assigns pods to nodes.
+
+2. **Worker Node**:
+   - **howbelet**: Manages containers on each node.
+   - **Docker**: The container runtime.
+
+3. **External Component**:
+   - **howbectl**: Command-line interface for interacting with the cluster.
+
+## Architecture
+
+```mermaid
+graph TD
+    A[howbectl] -->|single request| B[howbe-apiserver]
+    B <-->|unary| C[howbe-db]
+    B <-.->|bidirectional| C
+    B -.->|stream| D[howbe-scheduler]
+    D -->|single request| B
+    B -.->|stream| E[howbelet]
+    E -->|single request| B
+    
+    subgraph "Control Plane"
+    B
+    C
+    D
+    end
+    
+    subgraph "Worker Node"
+    E
+    F[Docker]
+    end
+
+    E --> F
+    
+    classDef default fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef controlplane fill:#ffeeaa,stroke:#333,stroke-width:2px;
+    classDef node fill:#aaffee,stroke:#333,stroke-width:2px;
+    
+    class A default;
+    class B,C,D controlplane;
+    class E,F node;
+
+    linkStyle 0 stroke:#ff9900,stroke-width:2px;
+    linkStyle 1,2 stroke:#33cc33,stroke-width:2px;
+    linkStyle 3,4,5,6 stroke:#3366ff,stroke-width:2px;
+    linkStyle 7 stroke:#ff9900,stroke-width:2px;
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px,color:black
+    style B fill:#ffeeaa,stroke:#333,stroke-width:2px,color:black
+    style C fill:#ffeeaa,stroke:#333,stroke-width:2px,color:black
+    style D fill:#ffeeaa,stroke:#333,stroke-width:2px,color:black
+    style E fill:#aaffee,stroke:#333,stroke-width:2px,color:black
+    style F fill:#aaffee,stroke:#333,stroke-width:2px,color:black
+```
+
+Communication between components is color-coded:
+- Orange lines: HTTP 1.1 single requests
+- Green lines: gRPC communication (unary and bidirectional)
+- Blue lines: Server-Sent Events (SSE) for streaming updates
 
 ## Getting Started
 
