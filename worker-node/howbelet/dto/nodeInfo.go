@@ -63,29 +63,25 @@ type Image struct {
 }
 
 func GetUpdateNodeStatus(name string) (*Node, error) {
-	// CPU 정보 가져오기
 	cpuCount, err := cpu.Counts(true)
 	if err != nil {
-		return nil, fmt.Errorf("CPU 정보 가져오기 실패: %v", err)
+		return nil, fmt.Errorf("Fail to get CPU info: %v", err)
 	}
 	allocatablecpuCount, err := getAllocatableMilliCPU()
 
-	// 메모리 정보 가져오기
 	vmStat, err := mem.VirtualMemory()
 	if err != nil {
-		return nil, fmt.Errorf("메모리 정보 가져오기 실패: %v", err)
+		return nil, fmt.Errorf("Fail to get Memory info: %v", err)
 	}
 
-	// 네트워크 정보 가져오기
 	nodeIP, err := getOutboundIP()
 	if err != nil {
-		return nil, fmt.Errorf("노드 IP 가져오기 실패: %v", err)
+		return nil, fmt.Errorf("Fail to get Node IP info: %v", err)
 	}
 
-	// 컨테이너 런타임 정보 가져오기
 	containerRuntime, containerVersion, err := getContainerRuntimeInfo()
 	if err != nil {
-		return nil, fmt.Errorf("컨테이너 런타임 정보 가져오기 실패: %v", err)
+		return nil, fmt.Errorf("Fail to get container runtime: %v", err)
 	}
 
 	return &Node{
@@ -94,7 +90,7 @@ func GetUpdateNodeStatus(name string) (*Node, error) {
 			Name: name,
 		},
 		Spec: Spec{
-			PodCIDR: "10.244.1.0/24", // 이 값은 실제 환경에 맞게 설정해야 합니다
+			PodCIDR: "10.244.1.0/24",
 		},
 		Status: Status{
 			Capacity: ResourceList{
@@ -143,21 +139,17 @@ func getContainerRuntimeInfo() (string, string, error) {
 		return "docker", strings.TrimSpace(string(out)), nil
 	}
 
-	// Docker가 없는 경우, 다른 컨테이너 런타임을 체크할 수 있습니다.
-	// 예: containerd, cri-o 등
-
-	return "", "", fmt.Errorf("컨테이너 런타임을 찾을 수 없음")
+	return "", "", fmt.Errorf("Cannot get container runtime info: %v", err)
 }
 
 func getAllocatableMilliCPU() (int64, error) {
 	cpuPercent, err := cpu.Percent(time.Second, true)
 	if err != nil {
-		return 0, fmt.Errorf("CPU 사용률 가져오기 실패: %v", err)
+		return 0, fmt.Errorf("Fail to get CPU percent: %v", err)
 	}
 
 	if len(cpuPercent) == 0 {
-		return 0, fmt.Errorf("CPU 사용률 데이터가 없습니다")
-	}
+		return 0, fmt.Errorf("Fail to get CPU percent: %v", err)
 
 	var totalAllocatableMilliCPU int64 = 0
 

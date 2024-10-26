@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/r3labs/sse/v2"
 	dto "howbelet/dto"
 	"howbelet/utils"
 	"io"
@@ -14,6 +13,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/r3labs/sse/v2"
 )
 
 var (
